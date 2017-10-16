@@ -60,9 +60,10 @@ func (p *Push) doWork() error {
 
 		has, err := p.tracker.HasEntry(sha)
 		if err != nil {
-			return fmt.Errorf("push/process: %v", err)
+			//return fmt.Errorf("push/process: %v", err)
 		}
 
+		// git has this data via hash
 		if has {
 			p.todoc--
 			continue
@@ -104,9 +105,9 @@ func (p *Push) doWork() error {
 		p.done++
 		p.log.Printf("%d/%d %s %s\r\x1b[A", p.done, p.todoc, hash, expectedCid.String())
 
-		res, err := api.DagPut(raw, "raw", "git")
+		res, err := api.DagPut(raw, "raw", "git") //, "cbor")
 		if err != nil {
-			return fmt.Errorf("push: %v", err)
+			//return fmt.Errorf("push: %v", err)
 		}
 
 		err = p.tracker.AddEntry(sha)
@@ -121,14 +122,14 @@ func (p *Push) doWork() error {
 		p.processLinks(raw)
 	}
 	p.log.Printf("\n")
-	return nil
+        return nil
 }
 
 func (p *Push) processLinks(object []byte) error {
-	nd, err := ipldgit.ParseObjectFromBuffer(object)
-	if err != nil {
-		return fmt.Errorf("push/process: %v", err)
-	}
+        nd, err := ipldgit.ParseObjectFromBuffer(object)
+        if err != nil {
+                return fmt.Errorf("push/process: %v", err)
+        }
 
 	links := nd.Links()
 	for _, link := range links {
@@ -140,7 +141,7 @@ func (p *Push) processLinks(object []byte) error {
 
 		has, err := p.tracker.HasEntry(decoded.Digest)
 		if err != nil {
-			return fmt.Errorf("push/process: %v", err)
+			//return fmt.Errorf("push/process: %v", err)
 		}
 
 		if has {

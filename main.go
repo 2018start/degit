@@ -91,7 +91,7 @@ func Main() error {
 				n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
-					return err
+					//return err
 				}
 				if r == nil {
 					r = make([]byte, 20)

@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/dgraph-io/badger"
-	"os"
 	"path"
+	"os"
 )
 
 //Tracker tracks which hashes are published in IPLD
 type Tracker struct {
-	kv *badger.KV
+	kv *badger.DB
 }
 
 func NewTracker(gitPath string) (*Tracker, error) {
@@ -22,7 +22,7 @@ func NewTracker(gitPath string) (*Tracker, error) {
 	opt.Dir = ipldDir
 	opt.ValueDir = ipldDir
 
-	kv, err := badger.NewKV(&opt)
+	kv, err := badger.Open(opt)
 	if err != nil {
 		return nil, err
 	}
@@ -32,31 +32,44 @@ func NewTracker(gitPath string) (*Tracker, error) {
 	}, nil
 }
 
+// Input: refName    Output: hash,err
 func (t *Tracker) GetRef(refName string) ([]byte, error) {
-	var it badger.KVItem
-	err := t.kv.Get([]byte(refName), &it)
+	txn := t.kv.NewTransaction(true)
+	it, err := txn.Get([]byte(refName))
 	if err != nil {
 		return nil, err
 	}
-	return syncBytes(it.Value)
+	txn.Commit(nil)
+	return it.Value()
+	//return syncBytes(it.Value)
 }
 
+// Set RefName and hash
 func (t *Tracker) SetRef(refName string, hash []byte) error {
-	return t.kv.Set([]byte(refName), hash, 0)
+	txn := t.kv.NewTransaction(true)
+	err := txn.Set([]byte(refName), hash, 0)
+	txn.Commit(nil)
+	return err
 }
 
+// add entry
 func (t *Tracker) AddEntry(hash []byte) error {
-	return t.kv.Set(hash, []byte{1}, 0)
+	txn := t.kv.NewTransaction(true)
+	err := txn.Set(hash, []byte{1}, 0)
+	txn.Commit(nil)
+	return err
 }
 
+// check entry
 func (t *Tracker) HasEntry(hash []byte) (bool, error) {
-	var item badger.KVItem
-	err := t.kv.Get(hash, &item)
+	txn := t.kv.NewTransaction(true)
+	item, err := txn.Get(hash)
 	if err != nil {
 		return false, err
 	}
-
-	val, err := syncBytes(item.Value)
+        val, err := item.Value()
+	txn.Commit(nil)
+	//val, err := syncBytes(item.Value)
 	return val != nil, err
 }
 

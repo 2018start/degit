@@ -13,12 +13,6 @@
       "name": "go-cid",
       "version": "0.7.18"
     },
-    {
-      "author": "dgraph-io",
-      "hash": "QmTBxwy8cerzXbZQFUwTBCSxx55jUgVzudFcpmnAHUGuPy",
-      "name": "badger",
-      "version": "1.4.0"
-    }
   ],
   "gxVersion": "0.10.0",
   "language": "go",
