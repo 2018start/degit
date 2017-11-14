@@ -58,7 +58,7 @@ func (t *Tracker) GetRef(refName string) ([]byte, error) {
 // Set RefName and hash
 func (t *Tracker) SetRef(refName string, hash []byte) error {
 	txn := t.kv.NewTransaction(true)
-	err := txn.Set([]byte(refName), hash, 0)
+	err := txn.Set([]byte(refName), hash)
 	txn.Commit(nil)
 	return err
 }
@@ -66,7 +66,7 @@ func (t *Tracker) SetRef(refName string, hash []byte) error {
 // add entry
 func (t *Tracker) AddEntry(hash []byte) error {
 	txn := t.kv.NewTransaction(true)
-	err := txn.Set(hash, []byte{1}, 0)
+	err := txn.Set(hash, []byte{1})
 	txn.Commit(nil)
 	return err
 }
