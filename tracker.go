@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/dgraph-io/badger"
-	"path"
 	"os"
+	"path"
 )
 
 //Tracker tracks which hashes are published in IPLD
@@ -11,8 +11,19 @@ type Tracker struct {
 	kv *badger.DB
 }
 
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	return false
+}
+
 func NewTracker(gitPath string) (*Tracker, error) {
 	ipldDir := path.Join(gitPath, "ipld")
+	if PathExists(ipldDir) {
+		os.RemoveAll(ipldDir)
+	}
 	err := os.MkdirAll(ipldDir, 0755)
 	if err != nil {
 		return nil, err
@@ -67,7 +78,7 @@ func (t *Tracker) HasEntry(hash []byte) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-        val, err := item.Value()
+	val, err := item.Value()
 	txn.Commit(nil)
 	//val, err := syncBytes(item.Value)
 	return val != nil, err
