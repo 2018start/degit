@@ -24,15 +24,16 @@ TODO: Fill out this long description.
 The build process for ipfs requires Go 1.8 or higher. If you don't have it: [Download Go 1.8+](https://golang.org/dl/).
 Download and decompression: 
 ```
-$ wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+$ wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz 
+  (mac-os: wget https://redirector.gvt1.com/edgedl/go/go1.9.2.darwin-amd64.tar.gz)
 $ tar -zxvf go1.8.linux-amd64.tar.gz
 $ sudo mv go /usr/local/
 ```
 You'll need to add Go's bin directories to your $PATH environment variable e.g., by adding these lines to your /etc/profile (for a system-wide installation) or $HOME/.profile:
 ```
 $ export GOROOT=/usr/local/go
-$ export GOPATH=$GOROOT/bin
-$ export PATH=$PATH:$GOPATH:$GOPATH/bin
+$ export GOPATH=$HOME/gocode
+$ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 ```
 Immediate effect and view go version:
 ```
@@ -41,10 +42,21 @@ $ go version
 ```
 
 ### 2. Install IPFS
-Download and make install:
+Download:
 ```
 $ go get -u -d github.com/ipfs/go-ipfs
+```
+
+Uncomment plugin entries in plugin/loader/preload_list and add plugins into IPFS binary: 
+```
+$ vim $GOPATH/src/github.com/ipfs/go-ipfs/plugin/loader/preload_list
+$ remove '#' in line 6 (#ipldgit github.com/ipfs/go-ipfs/plugin/plugins/git 0)
+```
+
+Build and install:
+```
 $ cd $GOPATH/src/github.com/ipfs/go-ipfs
+$ make build
 $ make install
 ```
 
@@ -56,25 +68,9 @@ generating 2048-bit RSA keypair...done
 ......
 ```
 
-### 3. Install IPFS with Git plugin
-#### Linux
-Build included plugins:
-```
-$ go-ipfs$ make build_plugins
-$ go-ipfs$ ls plugin/plugins/*.so
-```
-Copy desired plugins to $IPFS_PATH/plugins:
-```
-$ go-ipfs$ mkdir -p ~/.ipfs/plugins/
-$ go-ipfs$ cp plugin/plugins/git.so ~/.ipfs/plugins/
-$ go-ipfs$ chmod +x ~/.ipfs/plugins/git.so
-```
-Restart daemon if it is running.
+Note: If you have installed ipfs in Linux, you can add the needed plugins that allows augmenting the daemons functionality without recompiling. The detailed can refer to [Plugins.md](https://github.com/ipfs/go-ipfs/blob/master/docs/plugins.md).
 
-#### Mac
-Please refer to [Plugins.md](https://github.com/ipfs/go-ipfs/blob/master/docs/plugins.md) 
-
-### 4. Install git-remote-ipld
+### 3. Install git-remote-ipld
 Download git-remote-ipld and make install (Note: May need to use VPN to download golang repo in CHINA):
 ```
 $ go get github.com/Persper/git-remote-ipld
