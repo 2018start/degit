@@ -1,15 +1,11 @@
-package main
+package core
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
-	"os/exec"
 	"path"
-	//"strconv"
 	"strings"
 
 	cid "github.com/ipfs/go-cid"
@@ -19,107 +15,10 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-func exec_shell(s string) (string, error) {
-	cmd := exec.Command("/bin/bash", "-c", s)
-
-	var out bytes.Buffer
-	cmd.Stdout = &out
-
-	err := cmd.Run()
-	if err != nil {
-		l := log.New(os.Stderr, "", 0)
-		l.Printf("exec_shell error: " + s)
-	}
-
-	return out.String(), err
-}
-
-func exec_shell_may_error(s string) (string, error) {
-	cmd := exec.Command("/bin/bash", "-c", s)
-
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-
-	err := cmd.Run()
-	if err != nil {
-		//l := log.New(os.Stderr, "", 0)
-		//l.Printf("exec_shell_may_error error: " + s)
-	}
-
-	return out.String(), err
-}
-
-func exec_publish(git_hash string) (string, error) {
-	l := log.New(os.Stderr, "", 0)
-
-	// get the name of the targeted key from the repo name
-	dir, err := exec_shell("pwd")
-	dir_arr := strings.Split(dir, "/")
-	key := dir_arr[len(dir_arr)-1]
-
-	// generate the key of ipns
-	l.Printf("\n------ Generate the key of IPNS: ------")
-	s := "ipfs key gen --type=rsa --size=1024 " + key
-	out, err := exec_shell_may_error(s)
-	l.Printf("Generate the key: " + s)
-	l.Printf("The IPNS key: " + out)
-
-	// publish the hash to the targeted key using IPNS
-	l.Printf("\n------ Publish the hash to the key: ------")
-	key = strings.Replace(key, "\n", "", -1)
-	s = "ipfs name publish --key=" + key + " " + git_hash + " --ttl=8760h"
-	out, err = exec_shell(s)
-	l.Printf("Publish the hash of the git commit: " + s)
-	l.Printf("Pushed to IPNS as \x1b[32mipns::%s\x1b[39m\n\n", out[13:59])
-
-	return out[13:59], err
-}
-
-func exec_resolve(ipns_key string) (string, error) {
-	l := log.New(os.Stderr, "", 0)
-
-	// resolve the ipns key
-	l.Printf("\n------ Resolve the key of IPNS: ------")
-	s := "ipfs name resolve " + ipns_key
-	out, err := exec_shell(s)
-	out_arr := strings.Split(out, "/")
-	out = out_arr[len(out_arr)-1]
-	out = strings.Replace(out, "\n", "", -1)
-	l.Printf("Resolve the key: " + s)
-	l.Printf("The IPFS hash of the IPNS key: " + out)
-	l.Printf("")
-
-	return out, err
-}
-
-func transform_ipfs_to_git(ipfs_hash string) string {
-	c2, _ := cid.Decode(ipfs_hash)
-	mhash := c2.Hash()
-	hash := mhash.HexString()[4:]
-	return hash
-}
-
-func getLocalDir() (string, error) {
-	localdir := path.Join(os.Getenv("GIT_DIR"))
-
-	if err := os.MkdirAll(localdir, 0755); err != nil {
-		return "", err
-	}
-
-	return localdir, nil
-}
-
-func Main() error {
-	//l := log.New(os.Stderr, "", 0)
-	//l.Println(os.Args)
+func Main(use_ipns bool) error {
 
 	printf := func(format string, a ...interface{}) (n int, err error) {
 		return fmt.Printf(format, a...)
-	}
-
-	if len(os.Args) < 3 {
-		return fmt.Errorf("Usage: git-remote-ipld remote-name url")
 	}
 
 	localDir, err := getLocalDir()
@@ -153,20 +52,12 @@ func Main() error {
 
 		command = strings.Trim(command, "\n")
 
-		//l.Printf("< %s", command)
 		switch {
 		case command == "capabilities":
 			printf("push\n")
 			printf("fetch\n")
 			printf("\n")
 		case strings.HasPrefix(command, "list"):
-			// git clone ipns::QmS5mHovjz7soFc7joLu2smafRdNg2QDvBGu4s7EKm29Qv
-			// QmS5mHovjz7soFc7joLu2smafRdNg2QDvBGu4s7EKm29Qv: the ipns key value
-			// IPNS_Key -> IPFS_Key -> Git_Commit_Hash
-			if len(os.Args[2]) > 0 && os.Args[2][0:2] == "Qm" {
-				repo_ipfs_hash, _ := exec_resolve(os.Args[2])
-				os.Args[2] = transform_ipfs_to_git(repo_ipfs_hash)
-			}
 
 			headRef, err := repo.Reference(plumbing.HEAD, false)
 			if err != nil {
@@ -183,7 +74,7 @@ func Main() error {
 				n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
-					//return err
+					return err
 				}
 				if r == nil {
 					r = make([]byte, 20)
@@ -256,10 +147,13 @@ func Main() error {
 
 			c := cid.NewCidV1(cid.GitRaw, mhash)
 
-			// IPFS_Hash -> IPNS_Key
-			exec_publish(c.String())
-			/*l.Printf("Pushed to IPFS as \x1b[32mipld::%s\x1b[39m\n", headHash)
-			l.Printf("Head CID is %s\n", c.String())*/
+			if use_ipns == true {
+				exec_publish(c.String())
+			} else {
+				std_print("Pushed to IPFS as \x1b[32mipld::%s\x1b[39m\n", headHash)
+				std_print("Head CID is %s\n", c.String())
+			}
+
 			printf("ok %s\n", refs[0])
 			printf("\n")
 		case strings.HasPrefix(command, "fetch "):
@@ -288,10 +182,4 @@ func Main() error {
 		}
 	}
 	return nil
-}
-
-func main() {
-	if err := Main(); err != nil {
-		log.Fatal(err)
-	}
 }
