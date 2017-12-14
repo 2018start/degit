@@ -49,6 +49,11 @@ func (p *Push) PushHash(hash string) error {
 
 func (p *Push) doWork() error {
 	api := ipfs.NewShell("localhost:5001") //todo: config
+	//s := "QmdMpHXuUNnN4u42AdDUxyYiXmyHgBspX9qredEuEBaooL" //--key=test
+	//api.Publish("", s)
+	//path, _ := api.Resolve("QmY5jMFn8bcYVbKYPozTDjYPHgUxtiwqWpg8bC5bRm4oR9")
+	//l := log.New(os.Stderr, "", 0)
+	//l.Printf("path: "+path)
 
 	for e := p.todo.Front(); e != nil; e = e.Next() {
 		hash := e.Value.(string)
@@ -115,6 +120,9 @@ func (p *Push) doWork() error {
 			return fmt.Errorf("push: %v", err)
 		}
 
+		l := log.New(os.Stderr, "", 0)
+		l.Println("expectedCid: " + expectedCid.String())
+
 		if expectedCid.String() != res {
 			return fmt.Errorf("CIDs don't match: expected %s, got %s", expectedCid.String(), res)
 		}
@@ -122,14 +130,14 @@ func (p *Push) doWork() error {
 		p.processLinks(raw)
 	}
 	p.log.Printf("\n")
-        return nil
+	return nil
 }
 
 func (p *Push) processLinks(object []byte) error {
-        nd, err := ipldgit.ParseObjectFromBuffer(object)
-        if err != nil {
-                return fmt.Errorf("push/process: %v", err)
-        }
+	nd, err := ipldgit.ParseObjectFromBuffer(object)
+	if err != nil {
+		return fmt.Errorf("push/process: %v", err)
+	}
 
 	links := nd.Links()
 	for _, link := range links {

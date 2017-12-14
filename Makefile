@@ -10,6 +10,7 @@ deps: gx
 	gx-go rewrite
 
 install: 
-	go install
+	go build -o git-remote-ipns 
+	mv git-remote-ipns $(GOPATH)/bin
 
 .PHONY: all gx deps install

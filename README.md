@@ -70,25 +70,25 @@ generating 2048-bit RSA keypair...done
 
 Note: If you have installed ipfs in Linux, you can add the needed plugins that allows augmenting the daemons functionality without recompiling. The detailed can refer to [Plugins.md](https://github.com/ipfs/go-ipfs/blob/master/docs/plugins.md).
 
-### 3. Install git-remote-ipld
-Download git-remote-ipld and make install (Note: May need to use VPN to download golang repo in CHINA):
+### 3. Install dgit
+Download dgit and make install (Note: May need to use VPN to download golang repo in CHINA):
 ```
-$ go get github.com/Persper/git-remote-ipld
-$ cd $GOPATH/src/github.com/Persper/git-remote-ipld
+$ go get github.com/Persper/dgit
+$ cd $GOPATH/src/github.com/Persper/dgit
 $ make install
 ```
 
 ## API
-The git-remote-ipld support the following interfaces:
+The dgit support the following interfaces:
 ```
 Clone:
-$ git clone ipld::20dae521ef399bcf95d4ddb3cefc0eeb49658d2a
+$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
 
 Pull:
-$ git pull ipld::20dae521ef399bcf95d4ddb3cefc0eeb49658d2a
+$ git pull ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
 
 Push:
-$ git push ipld::
+$ git push ipns::
 ```
 
 ## Usage
@@ -97,27 +97,28 @@ Use a shell to run ipfs daemon:
 ```
 $ ipfs daemon
 ```
-Clone git-remote-ipld.git and push it to IPFS; 
+Clone dgit.git and push it to IPFS; 
 ```
-$ git clone https://github.com/Persper/git-remote-ipld.git
-$ cd git-remote-ipld
-Push:
-$ git push ipld::
+$ git clone https://github.com/Persper/dgit.git
+$ cd dgit
+```
+Push dgit.git into IPFS:
+```
+$ git push ipns::
 ...
-Pushed to IPFS as ipld::acd396c6518e2905a70ff2d78b0b709645ee6478
-Head CID is z8mWaHdJHe45mBxq5iESFDmmHFN28Kh4B
-To ipld::
+Pushed to IPNS as ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
+
+To ipns::
  * [new branch]      master -> master
 ``` 
-Get git-remote-ipld.git from IPFS:
+Fetch dgit.git from IPFS:
 ```
 $ cd ..
-$ git clone ipld::acd396c6518e2905a70ff2d78b0b709645ee6478
+$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW dgit
 ```
 Now you get the same repo.
 
-Note: Some features like remote tracking are still missing, though the plugin is
-quite usable.
+Note: Some features like remote tracking are still missing, though the plugin is quite usable.
 
 ## Contribute
 
