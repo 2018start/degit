@@ -14,6 +14,16 @@ func main() {
 		return
 	}
 
+	//
+	if len(os.Args[2]) > 0 && os.Args[2][0:2] != "Qm" {
+		hash, err := core.Read_IPNS_alias(os.Args[2])
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		os.Args[2] = hash
+	}
+
 	/*
 	 * For example: git clone ipns::QmS5mHovjz7soFc7joLu2smafRdNg2QDvBGu4s7EKm29Qv
 	 * QmS5mHovjz7soFc7joLu2smafRdNg2QDvBGu4s7EKm29Qv: the ipns key value
