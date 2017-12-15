@@ -57,7 +57,10 @@ func Main(use_ipns bool) error {
 			printf("push\n")
 			printf("fetch\n")
 			printf("\n")
-		case strings.HasPrefix(command, "list"):
+		case strings.HasPrefix(command, "list"): // list for-push ;  list
+
+			remote_dir, _ := fetch_remote_repo(localDir)
+			std_print(remote_dir)
 
 			headRef, err := repo.Reference(plumbing.HEAD, false)
 			if err != nil {
@@ -74,7 +77,7 @@ func Main(use_ipns bool) error {
 				n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
-					return err
+					//return err
 				}
 				if r == nil {
 					r = make([]byte, 20)
