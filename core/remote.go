@@ -5,12 +5,8 @@ import (
 	"path"
 )
 
-func fetch_remote_repo() {
-	//TODO:
-}
-
 func fetch_remote_repo(gitPath string) (string, error) {
-	remoteDir := path.Join(gitPath, "dgit")
+	remoteDir := path.Join(gitPath, "remote-repo")
 	if PathExists(remoteDir) {
 		os.RemoveAll(remoteDir)
 	}

@@ -52,15 +52,16 @@ func Main(use_ipns bool) error {
 
 		command = strings.Trim(command, "\n")
 
+		//std_print("command:%s", command)
+		//std_print("lensize:%d", len(command))
 		switch {
 		case command == "capabilities":
 			printf("push\n")
 			printf("fetch\n")
 			printf("\n")
 		case strings.HasPrefix(command, "list"): // list for-push ;  list
-
 			remote_dir, _ := fetch_remote_repo(localDir)
-			std_print(remote_dir)
+			//std_print(remote_dir)
 
 			headRef, err := repo.Reference(plumbing.HEAD, false)
 			if err != nil {
@@ -74,10 +75,11 @@ func Main(use_ipns bool) error {
 
 			var n int
 			err = it.ForEach(func(ref *plumbing.Reference) error {
-				n++
+				//TODO： Double printf
+				/*n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
-					//return err
+					return err
 				}
 				if r == nil {
 					r = make([]byte, 20)
@@ -95,7 +97,7 @@ func Main(use_ipns bool) error {
 					printf("%s %s\n", os.Args[2], headRef.Target().String())
 				} else {
 					printf("%s %s\n", hex.EncodeToString(r), ref.Name())
-				}
+				}*/
 
 				return nil
 			})
@@ -153,10 +155,11 @@ func Main(use_ipns bool) error {
 			if use_ipns == true {
 				exec_publish(c.String())
 			} else {
-				std_print("Pushed to IPFS as \x1b[32mipld::%s\x1b[39m\n", headHash)
+				std_print("Pushed to IPFS as \x1b[32mipfs::%s\x1b[39m\n", headHash)
 				std_print("Head CID is %s\n", c.String())
 			}
 
+			//std_print("refs[0]=%s\n", refs[0])
 			printf("ok %s\n", refs[0])
 			printf("\n")
 		case strings.HasPrefix(command, "fetch "):

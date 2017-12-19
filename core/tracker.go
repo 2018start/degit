@@ -20,10 +20,10 @@ func PathExists(path string) bool {
 }
 
 func NewTracker(gitPath string) (*Tracker, error) {
-	ipldDir := path.Join(gitPath, "ipld")
-	if PathExists(ipldDir) {
+	ipldDir := path.Join(gitPath, "tracker")
+	/*if PathExists(ipldDir) {
 		os.RemoveAll(ipldDir)
-	}
+	}*/
 	err := os.MkdirAll(ipldDir, 0755)
 	if err != nil {
 		return nil, err

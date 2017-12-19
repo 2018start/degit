@@ -8,9 +8,12 @@ import (
 )
 
 /*
- *  The format of the configurate file
+ *  The format of the configurate file (the default file: ~/.ipfs/dgit.ini)
  *  [ipns]
  *  ipns_alias_name=hash-value
+ *
+ *  [ipfs]
+ *  ipfs_alias_name=hash-value
  */
 func Read_IPNS_alias(alias string) (string, error) {
 	iniFile_path := os.Getenv("HOME") + "/.ipfs/dgit.ini"

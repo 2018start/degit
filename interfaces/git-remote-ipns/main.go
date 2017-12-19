@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	// Transform the alias to the ipns hash
+	/* Transform the alias to the ipns hash */
 	if len(os.Args[2]) > 0 && os.Args[2][0:2] != "Qm" {
 		hash, err := core.Read_IPNS_alias(os.Args[2])
 		if err != nil {
