@@ -2,17 +2,16 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-> The git-remote-ipld provides interfaces for pushing and pulling commits from/to IPFS!
+> The dgit provides interfaces for pushing and pulling commits from/to IPFS/IPNS!
 > This helper is experimental as of now.
-
-TODO: Fill out this long description.
 
 ## Table of Contents
 
 - [Background](#background)
 - [Install](#install)
-- [Usage](#usage)
 - [API](#api)
+- [Usage](#usage)
+- [Note](#note)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -82,17 +81,20 @@ $ make install
 The dgit support the following interfaces:
 ```
 Clone:
-$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
+$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW 
+$ git clone ipfs::hash-value
 
 Pull:
 $ git pull ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
+$ git pull ipfs::hash-value
 
 Push:
 $ git push ipns::
+$ git push ipfs::
 ```
 
 ## Usage
-#### Just use this repo to test it out:
+#### Example1: Just use this repo to test it out:
 Use a shell to run ipfs daemon:
 ```
 $ ipfs daemon
@@ -106,19 +108,41 @@ Push dgit.git into IPFS:
 ```
 $ git push ipns::
 ...
-Pushed to IPNS as ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
+Pushed to IPNS as ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P
 
 To ipns::
  * [new branch]      master -> master
 ``` 
-Fetch dgit.git from IPFS:
+Set the IPNS::hash as the default remote repo:
+```
+$ git remote set-url origin ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P
+$ git remote -v
+origin	ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P (fetch)
+origin	ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P (push)
+```
+Then, you can use "git pull" or "git push" to pull/push new commits from/to the IPNS. 
+
+Fetch dgit.git from IPNS:
 ```
 $ cd ..
-$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW dgit
+$ git clone ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P dgit
 ```
 Now you get the same repo.
 
-Note: Some features like remote tracking are still missing, though the plugin is quite usable.
+Create a alias for the targeted IPNS hash, because the IPNS hash is difficult to remember:
+```
+$ vim ~/.ipfs/dgit.ini
+[ipns]
+key=QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P
+```
+Then, you can use the alias:
+```
+$ git clone ipns::key
+```
+
+## Note
+
+Todo: Some features (e.g., tracking the remote state when issuing git pushes), though the plugin is quite usable.
 
 ## Contribute
 
