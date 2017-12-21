@@ -60,7 +60,7 @@ func Main(use_ipns bool) error {
 			printf("fetch\n")
 			printf("\n")
 		case strings.HasPrefix(command, "list"): // list for-push ;  list
-			remote_dir, _ := fetch_remote_repo(localDir)
+			//remote_dir, _ := fetch_remote_repo(localDir)
 			//std_print(remote_dir)
 
 			headRef, err := repo.Reference(plumbing.HEAD, false)
@@ -76,7 +76,7 @@ func Main(use_ipns bool) error {
 			var n int
 			err = it.ForEach(func(ref *plumbing.Reference) error {
 				//TODO： Double printf
-				/*n++
+				n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
 					return err
@@ -97,7 +97,7 @@ func Main(use_ipns bool) error {
 					printf("%s %s\n", os.Args[2], headRef.Target().String())
 				} else {
 					printf("%s %s\n", hex.EncodeToString(r), ref.Name())
-				}*/
+				}
 
 				return nil
 			})

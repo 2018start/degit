@@ -48,11 +48,12 @@ func (t *Tracker) GetRef(refName string) ([]byte, error) {
 	txn := t.kv.NewTransaction(true)
 	it, err := txn.Get([]byte(refName))
 	if err != nil {
+		txn.Commit(nil)
 		return nil, err
 	}
+	str, err2 := it.Value()
 	txn.Commit(nil)
-	return it.Value()
-	//return syncBytes(it.Value)
+	return str, err2
 }
 
 // Set RefName and hash
@@ -76,6 +77,7 @@ func (t *Tracker) HasEntry(hash []byte) (bool, error) {
 	txn := t.kv.NewTransaction(true)
 	item, err := txn.Get(hash)
 	if err != nil {
+		txn.Commit(nil)
 		return false, err
 	}
 	val, err := item.Value()
