@@ -15,6 +15,23 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
+func do_put_check(localDir string, hash string, ref_name string) error {
+	localDir = path.Join(localDir, "objects")
+	localDir = path.Join(localDir, hash[:2])
+	localDir = path.Join(localDir, hash[2:])
+	std_print("push-check hash: %s ;  path: %s\n", hash, localDir)
+
+	_, err := os.Stat(localDir)
+	if os.IsNotExist(err) {
+		std_print("error: failed to push some refs to remote IPNFS repo. \n")
+		std_print("hint: Updates were rejected because the remote contains work that you do not have locally. \n")
+		std_print("This is usually caused by another repository pushing to the same ref. \n")
+		std_print("You may want to first integrate the remote changes (e.g., 'git pull ...') before pushing again. \n\n")
+		return err
+	}
+	return nil
+}
+
 func Main(use_ipns bool) error {
 
 	printf := func(format string, a ...interface{}) (n int, err error) {
@@ -63,6 +80,7 @@ func Main(use_ipns bool) error {
 			//remote_dir, _ := fetch_remote_repo(localDir)
 			//std_print(remote_dir)
 
+			/* generate ref: refs/heads/master HEAD. */
 			headRef, err := repo.Reference(plumbing.HEAD, false)
 			if err != nil {
 				return err
@@ -75,11 +93,10 @@ func Main(use_ipns bool) error {
 
 			var n int
 			err = it.ForEach(func(ref *plumbing.Reference) error {
-				//TODO： Double printf
 				n++
 				r, err := tracker.GetRef(ref.Name().String())
 				if err != nil {
-					return err
+					//return err
 				}
 				if r == nil {
 					r = make([]byte, 20)
@@ -94,8 +111,10 @@ func Main(use_ipns bool) error {
 						return errors.New("invalid hash length")
 					}
 
+					//std_print("1 %s %s\n", os.Args[2], headRef.Target().String())
 					printf("%s %s\n", os.Args[2], headRef.Target().String())
 				} else {
+					//std_print("2 %s %s\n", hex.EncodeToString(r), ref.Name())
 					printf("%s %s\n", hex.EncodeToString(r), ref.Name())
 				}
 
@@ -115,13 +134,16 @@ func Main(use_ipns bool) error {
 					return errors.New("invalid hash length")
 				}
 
+				//std_print("3 %s %s\n", os.Args[2], "refs/heads/master")
 				printf("%s %s\n", os.Args[2], "refs/heads/master")
 			}
 
 			switch headRef.Type() {
 			case plumbing.HashReference:
+				//std_print("4 %s %s\n", headRef.Hash(), headRef.Name())
 				printf("%s %s\n", headRef.Hash(), headRef.Name())
 			case plumbing.SymbolicReference:
+				//std_print("5 %s %s\n", headRef.Target().String(), headRef.Name())
 				printf("@%s %s\n", headRef.Target().String(), headRef.Name())
 			}
 
@@ -135,6 +157,14 @@ func Main(use_ipns bool) error {
 			}
 
 			headHash := localRef.Hash().String()
+
+			std_print("check hash=%s  ; refs[0]=%s\n", os.Args[2], refs[0])
+			if os.Args[2] != "" {
+				err = do_put_check(localDir, os.Args[2], refs[0])
+				if err != nil {
+					return err
+				}
+			}
 
 			push := NewPush(localDir, tracker, repo)
 			err = push.PushHash(headHash)
@@ -164,6 +194,8 @@ func Main(use_ipns bool) error {
 			printf("\n")
 		case strings.HasPrefix(command, "fetch "):
 			parts := strings.Split(command, " ")
+
+			//std_print("parts[1]=%s parts[2]=%s\n", parts[1], parts[2])
 
 			fetch := NewFetch(localDir, tracker)
 			err := fetch.FetchHash(parts[1])

@@ -14,6 +14,11 @@ func main() {
 		return
 	}
 
+	// os.args[0] [1] [2]
+	// git cloone: $GOROOT/bin/git-remote-ipns ipns::
+	// git push: $GOROOT/bin/git-remote-ipns ipns::  ipns-value
+	// git pull: $GOROOT/bin/git-remote-ipns ipns::  ipns-value
+
 	/* Transform the alias to the ipns hash */
 	if len(os.Args[2]) > 0 && os.Args[2][0:2] != "Qm" {
 		hash, err := core.Read_IPNS_alias(os.Args[2])
