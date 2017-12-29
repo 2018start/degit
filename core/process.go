@@ -16,7 +16,18 @@ import (
 )
 
 func do_put_check(localDir string, hash string, ref_name string) error {
-	localDir = path.Join(localDir, "objects")
+
+	out, err := exec_shell_may_error("git cat-file -p " + hash)
+	//std_print("out: %s\n", out)
+	if err != nil {
+		std_print("error: failed to push some refs to remote IPNFS repo. \n")
+		std_print("hint: Updates were rejected because the remote contains work that you do not have locally. \n")
+		std_print("This is usually caused by another repository pushing to the same ref. \n")
+		std_print("You may want to first integrate the remote changes (e.g., 'git pull ...') before pushing again. \n\n")
+		return err
+	}
+
+	/*localDir = path.Join(localDir, "objects")
 	localDir = path.Join(localDir, hash[:2])
 	localDir = path.Join(localDir, hash[2:])
 	std_print("push-check hash: %s ;  path: %s\n", hash, localDir)
@@ -28,7 +39,8 @@ func do_put_check(localDir string, hash string, ref_name string) error {
 		std_print("This is usually caused by another repository pushing to the same ref. \n")
 		std_print("You may want to first integrate the remote changes (e.g., 'git pull ...') before pushing again. \n\n")
 		return err
-	}
+	}*/
+
 	return nil
 }
 
