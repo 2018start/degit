@@ -114,12 +114,59 @@ git push ipfs::
 ```
 
 ## Usage
-#### Example1: Just use this repo to test it out:
+#### Example 1: Create a new repo and store it in IPFS: 
 Use a shell to run ipfs daemon:
 ```
 $ ipfs daemon
 ```
-Clone dgit.git and push it to IPFS; 
+Use another shell to create a new repo. For example, I create a new repo, named sample.
+```
+$ mkdir sample
+$ cd sample
+$ git init
+```
+Then, create a new file (e.g., sample.txt) and commit this added file.
+```
+$ echo "hello world" > sample.txt
+$ git add sample.txt
+$ git commit -m "hello world"
+ [master (root-commit) 74ab5c1] hello world
+ 1 file changed, 1 insertion(+)
+ create mode 100644 sample.txt
+```
+Next, push this new repo to IPFS.
+```
+$ git push --set-upstream ipns:: master
+...
+Pushed to IPNS as ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8
+
+To ipns::
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from ipns::.
+```
+Set the IPNS::hash as the default remote repo:
+```
+$ git remote add origin ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8
+$ git remote -v
+origin	ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8 (fetch)
+origin	ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8 (push)
+$ git branch master -u origin/master
+Branch master set up to track remote branch master from origin.
+```
+Then, you can use "git pull" or "git push" to pull/push new commits from/to the IPNS.
+
+Fetch the sample repo from IPNS:
+```
+$ git clone ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8 sample
+```
+Now you get the same repo.
+
+#### Example 2: Move an existing repo in Github to IPFS: 
+Use a shell to run ipfs daemon:
+```
+$ ipfs daemon
+```
+Use another shell to clone dgit.git and push it to IPFS; 
 ```
 $ git clone https://github.com/Persper/dgit.git
 $ cd dgit
@@ -144,20 +191,20 @@ Then, you can use "git pull" or "git push" to pull/push new commits from/to the 
 
 Fetch dgit.git from IPNS:
 ```
-$ cd ..
 $ git clone ipns::QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P dgit
 ```
 Now you get the same repo.
 
-Create a alias for the targeted IPNS hash, because the IPNS hash is difficult to remember:
+#### Example 3: Create an alias for the targeted IPNS hash:
+Create an alias for the targeted IPNS hash, because the IPNS hash is difficult to remember:
 ```
 $ vim ~/.ipfs/dgit.ini
 [ipns]
-key=QmTU81e9kr4MeWaLP2gExfqyHSzP3L1wXzymogUNbwxu6P
+sample=QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8
 ```
 Then, you can use the alias:
 ```
-$ git clone ipns::key
+$ git clone ipns::sample sample
 ```
 
 ## Note
