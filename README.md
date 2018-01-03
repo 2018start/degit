@@ -20,77 +20,97 @@
 ## Install
 
 ### 1. Install Go
-The build process for ipfs requires Go 1.8 or higher. If you don't have it: [Download Go 1.8+](https://golang.org/dl/).
-Download and decompression: 
-```
-$ wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz 
-  (mac-os: wget https://redirector.gvt1.com/edgedl/go/go1.9.2.darwin-amd64.tar.gz)
-$ tar -zxvf go1.8.linux-amd64.tar.gz
-$ sudo mv go /usr/local/
-```
-You'll need to add Go's bin directories to your $PATH environment variable e.g., by adding these lines to your /etc/profile (for a system-wide installation) or $HOME/.profile:
-```
-$ export GOROOT=/usr/local/go
-$ export GOPATH=$HOME/gocode
-$ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-```
-Immediate effect and view go version:
-```
-$ source /etc/profile
-$ go version
+The build process for IPFS requires Go 1.8 or higher. If you don't have it,
+[install Go 1.8+](https://golang.org/doc/install).
+
+Here we provide an example script for quick start.
+
+On Ubuntu:
+```bash
+# Install Go in ~/.local/go
+wget https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-amd64.tar.gz
+mkdir -p ~/.local
+tar -C ~/.local -zxf go1.9.2.linux-amd64.tar.gz
+
+# Add Go's bin directory to the $PATH environment variable
+echo 'export GOROOT=$HOME/.local/go' >> ~/.bashrc
+echo 'export PATH=$PATH:$GOROOT/bin' >> ~/.bashrc
+# Set GOPATH which is used later as a workspace for Go
+echo 'export GOPATH=$HOME/go' >> ~/.bashrc
+
+# Make the above effective immediately
+source ~/.bashrc
+go version
 ```
 
-### 2. Install IPFS
-Download:
-```
-$ go get -u -d github.com/ipfs/go-ipfs
+On macOS:
+```bash
+# Install Go in /usr/local
+curl -LO https://redirector.gvt1.com/edgedl/go/go1.9.2.darwin-amd64.tar.gz
+mkdir -p ~/.local
+tar -C ~/.local -xf go1.9.2.darwin-amd64.tar.gz
+
+# Add Go's bin directory to the $PATH environment variable
+echo 'export GOROOT=$HOME/.local/go' >> ~/.bash_profile
+echo 'export PATH=$PATH:$GOROOT/bin' >> ~/.bash_profile
+# Set GOPATH which is used later as a workspace for Go
+echo 'export GOPATH=$HOME/go' >> ~/.bash_profile
+
+# Make the above effective immediately
+source ~/.bash_profile
+go version
 ```
 
-Uncomment plugin entries in plugin/loader/preload_list and add plugins into IPFS binary: 
+### 2. Build IPFS with IPLD git plugin
+
+Download IPFS and dependencies:
+```bash
+go get -u -d github.com/ipfs/go-ipfs
 ```
-$ vim $GOPATH/src/github.com/ipfs/go-ipfs/plugin/loader/preload_list
-$ remove '#' in line 6 (#ipldgit github.com/ipfs/go-ipfs/plugin/plugins/git 0)
+
+Uncomment the plugin entry in $GOPATH/src/github.com/ipfs/go-ipfs/plugin/loader/preload_list: `#ipldgit github.com/ipfs/go-ipfs/plugin/plugins/git 0`. Or, directly append the line:
+```bash
+echo 'ipldgit github.com/ipfs/go-ipfs/plugin/plugins/git 0' >> $GOPATH/src/github.com/ipfs/go-ipfs/plugin/loader/preload_list
 ```
 
 Build and install:
-```
-$ cd $GOPATH/src/github.com/ipfs/go-ipfs
-$ make build
-$ make install
+```bash
+cd $GOPATH/src/github.com/ipfs/go-ipfs
+make build
+make install
 ```
 
 Test it out:
-```
-$ ipfs init
-initializing IPFS node at /home/hqd/.ipfs
-generating 2048-bit RSA keypair...done
-......
+```bash
+ipfs init
 ```
 
-Note: If you have installed ipfs in Linux, you can add the needed plugins that allows augmenting the daemons functionality without recompiling. The detailed can refer to [Plugins.md](https://github.com/ipfs/go-ipfs/blob/master/docs/plugins.md).
+Note: If you have installed ipfs in Linux, you can add the needed plugin
+without recompiling. The detailed can refer to
+[Plugins.md](https://github.com/ipfs/go-ipfs/blob/master/docs/plugins.md).
 
 ### 3. Install dgit
-Download dgit and make install (Note: May need to use VPN to download golang repo in CHINA):
-```
-$ go get github.com/Persper/dgit
-$ cd $GOPATH/src/github.com/Persper/dgit
-$ make install
+
+Download dgit and make install:
+```bash
+go get github.com/Persper/dgit
+make -C $GOPATH/src/github.com/Persper/dgit install
 ```
 
 ## API
 The dgit support the following interfaces:
 ```
-Clone:
-$ git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW 
-$ git clone ipfs::hash-value
+# Clone:
+git clone ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW 
+git clone ipfs::hash-value
 
-Pull:
-$ git pull ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
-$ git pull ipfs::hash-value
+# Pull:
+git pull ipns::QmULVCL5LGcmKaLMZG1qU6ZZyB8vaL3c5LJtSQsXEu5KKW
+git pull ipfs::hash-value
 
-Push:
-$ git push ipns::
-$ git push ipfs::
+# Push:
+git push ipns::
+git push ipfs::
 ```
 
 ## Usage
