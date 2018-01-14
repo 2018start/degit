@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Persper/dgit/core"
+	"github.com/Persper/degit/core"
 )
 
 func main() {
