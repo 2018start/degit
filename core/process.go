@@ -17,7 +17,7 @@ import (
 
 func do_put_check(localDir string, hash string, ref_name string) error {
 
-	out, err := exec_shell_may_error("git cat-file -p " + hash)
+	_, err := exec_shell_may_error("git cat-file -p " + hash)
 	//std_print("out: %s\n", out)
 	if err != nil {
 		std_print("error: failed to push some refs to remote IPNFS repo. \n")

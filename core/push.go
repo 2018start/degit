@@ -48,12 +48,16 @@ func (p *Push) PushHash(hash string) error {
 }
 
 func (p *Push) doWork() error {
-	api := ipfs.NewShell("localhost:5001") //todo: config
+	//api := ipfs.NewShell("localhost:5001") //todo: config.
+	api := ipfs.NewShell("166.111.69.130:5001") //todo: config.
 	//s := "QmdMpHXuUNnN4u42AdDUxyYiXmyHgBspX9qredEuEBaooL" //--key=test
 	//api.Publish("", s)
 	//path, _ := api.Resolve("QmY5jMFn8bcYVbKYPozTDjYPHgUxtiwqWpg8bC5bRm4oR9")
 	//l := log.New(os.Stderr, "", 0)
 	//l.Printf("path: "+path)
+
+	std_print("hehehe %d\n", 1)
+	//return nil
 
 	for e := p.todo.Front(); e != nil; e = e.Next() {
 		hash := e.Value.(string)

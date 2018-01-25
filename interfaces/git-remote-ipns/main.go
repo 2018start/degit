@@ -14,6 +14,10 @@ func main() {
 		return
 	}
 
+	//var ln core.LocalNode
+	//ln.Init()
+	//return
+
 	// os.args[0] [1] [2]
 	// git cloone: $GOROOT/bin/git-remote-ipns ipns::
 	// git push: $GOROOT/bin/git-remote-ipns ipns::  ipns-value
