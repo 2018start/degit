@@ -13,6 +13,11 @@ func Err_print(out string) {
 	l.Printf(out)
 }
 
+func Error_print(out string) {
+	l := log.New(os.Stderr, "", 0)
+	l.Printf(out)
+}
+
 func std_print(format string, a ...interface{}) {
 	l := log.New(os.Stderr, "", 0)
 	l.Printf(format, a...)

@@ -10,7 +10,26 @@ import (
 func main() {
 
 	if len(os.Args) < 3 {
-		core.Err_print("Usage: git-remote-ipfs remote-name url\n")
+		core.Error_print("Usage: git-remote-ipfs remote-name url\n")
+		return
+	}
+
+	var ipfs_daemon core.LocalNode
+	daemon_err := ipfs_daemon.Init()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
+	}
+
+	daemon_err = ipfs_daemon.Start()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
+	}
+
+	daemon_err = ipfs_daemon.Kill()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
 		return
 	}
 

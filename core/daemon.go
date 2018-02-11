@@ -36,6 +36,7 @@ func (n *LocalNode) envForDaemon() ([]string, error) {
 	npath := "IPFS_PATH=" + n.Dir
 	for i, e := range envs {
 		p := strings.Split(e, "=")
+		//std_print("%s %s\n", p[0], p[1])
 		if p[0] == "IPFS_PATH" {
 			envs[i] = npath
 			return envs, nil
@@ -79,7 +80,7 @@ func setupOpt(cmd *exec.Cmd) {
 }
 
 func tryAPICheck(n *LocalNode) error {
-	resp, err := http.Get("http://127.0.0.1:5001/api/v0/id")
+	resp, err := http.Get("http://localhost:5001/api/v0/id")
 	if err != nil {
 		return err
 	}
@@ -127,7 +128,7 @@ func waitOnAPI(n *LocalNode) error {
 
 // Init the ipfs path anf dir
 func (n *LocalNode) Init() error {
-	n.Dir = os.Getenv("HOME") + "/.ipfs/daemon/"
+	n.Dir = os.Getenv("HOME") + "/.ipfs/"
 	std_print("daemon path: %s\n", n.Dir)
 
 	err := os.MkdirAll(n.Dir, 0777)
@@ -153,7 +154,8 @@ func (n *LocalNode) Init() error {
 	return nil
 }
 
-func (n *LocalNode) Start(args []string) error {
+func (n *LocalNode) Start() error {
+	//func (n *LocalNode) Start(args []string) error {
 	alive, err := n.isAlive()
 	if err != nil {
 		return err
@@ -164,8 +166,9 @@ func (n *LocalNode) Start(args []string) error {
 	}
 
 	dir := n.Dir
-	dargs := append([]string{"daemon"}, args...)
-	cmd := exec.Command("ipfs", dargs...)
+	//dargs := append([]string{"daemon"}, args...)
+	//cmd := exec.Command("ipfs", dargs...)
+	cmd := exec.Command("ipfs", "daemon")
 	cmd.Dir = dir
 
 	cmd.Env, err = n.envForDaemon()
@@ -214,6 +217,7 @@ func (n *LocalNode) Start(args []string) error {
 		return err
 	}
 
+	std_print("Finish start daemon %s, pid = %d\n", dir, pid)
 	return nil
 }
 
@@ -235,7 +239,6 @@ func (n *LocalNode) Kill() error {
 		}
 	}()
 
-	// kill
 	err = p.Signal(syscall.SIGTERM)
 	if err != nil {
 		return fmt.Errorf("error killing daemon %s: %s\n", n.Dir, err)
@@ -271,7 +274,10 @@ func (n *LocalNode) Kill() error {
 		return fmt.Errorf("error killing daemon %s: %s\n", n.Dir, err)
 	}
 
+	std_print("Finish killing daemon %s: pid = %d\n", n.Dir, pid)
+
 	for {
+		std_print("wait\n")
 		err := p.Signal(syscall.Signal(0))
 		if err != nil {
 			break

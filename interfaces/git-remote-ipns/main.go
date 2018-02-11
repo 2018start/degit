@@ -10,18 +10,33 @@ import (
 func main() {
 
 	if len(os.Args) < 3 {
-		core.Err_print("Usage: git-remote-ipns remote-name url\n")
+		core.Error_print("Usage: git-remote-ipns remote-name url\n")
 		return
 	}
 
-	//var ln core.LocalNode
-	//ln.Init()
-	//return
+	var ipfs_daemon core.LocalNode
+	daemon_err := ipfs_daemon.Init()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
+	}
 
-	// os.args[0] [1] [2]
-	// git cloone: $GOROOT/bin/git-remote-ipns ipns::
-	// git push: $GOROOT/bin/git-remote-ipns ipns::  ipns-value
-	// git pull: $GOROOT/bin/git-remote-ipns ipns::  ipns-value
+	daemon_err = ipfs_daemon.Start()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
+	}
+
+	daemon_err = ipfs_daemon.Kill()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
+	}
+
+	/*
+	 * Note: The IPNS relies on DHT (Distributed Hash Table), which needs to republic 
+	 * IPNS every 24 hours. 
+	 */
 
 	/* Transform the alias to the ipns hash */
 	if len(os.Args[2]) > 0 && os.Args[2][0:2] != "Qm" {
