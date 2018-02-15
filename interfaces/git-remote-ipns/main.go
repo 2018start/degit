@@ -27,15 +27,9 @@ func main() {
 		return
 	}
 
-	daemon_err = ipfs_daemon.Kill()
-	if daemon_err != nil {
-		log.Fatal(daemon_err)
-		return
-	}
-
 	/*
-	 * Note: The IPNS relies on DHT (Distributed Hash Table), which needs to republic 
-	 * IPNS every 24 hours. 
+	 * Note: The IPNS relies on DHT (Distributed Hash Table), which needs to republic
+	 * IPNS every 24 hours.
 	 */
 
 	/* Transform the alias to the ipns hash */
@@ -60,5 +54,11 @@ func main() {
 
 	if err := core.Main(true); err != nil {
 		log.Fatal(err)
+	}
+
+	daemon_err = ipfs_daemon.Kill()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
 	}
 }
