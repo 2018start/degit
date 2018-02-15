@@ -27,12 +27,6 @@ func main() {
 		return
 	}
 
-	daemon_err = ipfs_daemon.Kill()
-	if daemon_err != nil {
-		log.Fatal(daemon_err)
-		return
-	}
-
 	/*
 	 * For example: git clone ipfs::QmXAqvdCEnbV6t2VZXu11SykRXZuMYkQtdbUB7tQ16XYES
 	 * QmXAqvdCEnbV6t2VZXu11SykRXZuMYkQtdbUB7tQ16XYES: the ipfs key value
@@ -44,5 +38,11 @@ func main() {
 
 	if err := core.Main(false); err != nil {
 		log.Fatal(err)
+	}
+
+	daemon_err = ipfs_daemon.Kill()
+	if daemon_err != nil {
+		log.Fatal(daemon_err)
+		return
 	}
 }

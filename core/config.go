@@ -25,7 +25,7 @@ func Read_IPNS_alias(alias string) (string, error) {
 	find_alias := "ipns." + alias
 	hash, find_err := c.String(find_alias)
 	if find_err != nil {
-		Err_print("Error: can not find " + alias + " from file " + iniFile_path)
+		Error_print("Error: can not find " + alias + " from file " + iniFile_path)
 		return hash, find_err
 	}
 	std_print("Transform alias %s to hash %s successfully", alias, hash)

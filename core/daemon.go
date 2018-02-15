@@ -20,7 +20,6 @@ import (
 /*
  * LocalNode.Dir needs to modified.
  */
-
 type LocalNode struct {
 	Dir    string
 	PeerID string
@@ -30,7 +29,7 @@ func (n *LocalNode) GetPeerID() string {
 	return n.PeerID
 }
 
-// get ipfs path
+/* get ipfs path. */
 func (n *LocalNode) envForDaemon() ([]string, error) {
 	envs := os.Environ()
 	npath := "IPFS_PATH=" + n.Dir
@@ -56,6 +55,7 @@ func (n *LocalNode) getPID() (int, error) {
 
 func (n *LocalNode) isAlive() (bool, error) {
 	pid, err := n.getPID()
+
 	if os.IsNotExist(err) {
 		return false, nil
 	} else if err != nil {
@@ -67,7 +67,7 @@ func (n *LocalNode) isAlive() (bool, error) {
 		return false, nil
 	}
 
-	// check the alive of the proc
+	/* check the alive of the proc. */
 	err = proc.Signal(syscall.Signal(0))
 	if err != nil {
 		return false, nil
@@ -126,20 +126,26 @@ func waitOnAPI(n *LocalNode) error {
 	return fmt.Errorf("node %s failed to come online in given time period", n.GetPeerID())
 }
 
-// Init the ipfs path anf dir
+/* Init the ipfs path anf dir. */
 func (n *LocalNode) Init() error {
 	n.Dir = os.Getenv("HOME") + "/.ipfs/"
 	std_print("daemon path: %s\n", n.Dir)
+
+	flag := PathExists(n.Dir)
+	if flag {
+		std_print("------------------- Ipfs is already exist --------------------")
+		return nil
+	}
 
 	err := os.MkdirAll(n.Dir, 0777)
 	if err != nil {
 		return err
 	}
 
-	// Number of bits to use in the generated RSA private key
+	/* Number of bits to use in the generated RSA private key. */
 	cmd := exec.Command("ipfs", "init", "-b=1024")
 
-	// Get the ipfs path
+	/* Get the ipfs path. */
 	cmd.Env, err = n.envForDaemon()
 	if err != nil {
 		return err
@@ -150,6 +156,7 @@ func (n *LocalNode) Init() error {
 		return fmt.Errorf("%s: %s", err, string(out))
 	}
 
+	std_print("\n------------------- Already initialize ipfs --------------------")
 	std_print("%s", string(out))
 	return nil
 }
@@ -197,6 +204,7 @@ func (n *LocalNode) Start() error {
 	}
 	pid := cmd.Process.Pid
 
+	std_print("\n------------------- Already start ipfs daemon --------------------")
 	std_print("Start daemon %s, pid = %d\n", dir, pid)
 	err = ioutil.WriteFile(filepath.Join(dir, "daemon.pid"), []byte(fmt.Sprint(pid)), 0666)
 	if err != nil {
@@ -274,10 +282,12 @@ func (n *LocalNode) Kill() error {
 		return fmt.Errorf("error killing daemon %s: %s\n", n.Dir, err)
 	}
 
+	std_print("\n------------------- Already kill ipfs daemon --------------------")
 	std_print("Finish killing daemon %s: pid = %d\n", n.Dir, pid)
 
+	return nil
+
 	for {
-		std_print("wait\n")
 		err := p.Signal(syscall.Signal(0))
 		if err != nil {
 			break

@@ -11,14 +11,6 @@ type Tracker struct {
 	kv *badger.DB
 }
 
-func PathExists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	return false
-}
-
 func NewTracker(gitPath string) (*Tracker, error) {
 	ipldDir := path.Join(gitPath, "tracker")
 	/*if PathExists(ipldDir) {

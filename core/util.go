@@ -8,11 +8,6 @@ import (
 	"path"
 )
 
-func Err_print(out string) {
-	l := log.New(os.Stderr, "", 0)
-	l.Printf(out)
-}
-
 func Error_print(out string) {
 	l := log.New(os.Stderr, "", 0)
 	l.Printf(out)
@@ -21,6 +16,14 @@ func Error_print(out string) {
 func std_print(format string, a ...interface{}) {
 	l := log.New(os.Stderr, "", 0)
 	l.Printf(format, a...)
+}
+
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	return false
 }
 
 func getLocalDir() (string, error) {
