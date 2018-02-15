@@ -116,11 +116,7 @@ git push ipfs::
 
 ## Usage
 #### Example 1: Create a new repo and store it in IPFS: 
-Use a shell to run ipfs daemon:
-```bash
-$ ipfs daemon
-```
-Use another shell to create a new repo. For example, I create a new repo, named sample.
+Create a new repo. For example, I create a new repo, named sample.
 ```bash
 $ mkdir sample
 $ cd sample
@@ -163,11 +159,7 @@ $ git clone ipns::QmaqogN63T55e1qxwbFfd2ZVpfsZLhj6ikc1LjYRCi9iP8 sample
 Now you get the same repo.
 
 #### Example 2: Move an existing repo in Github to IPFS: 
-Use a shell to run ipfs daemon:
-```bash
-$ ipfs daemon
-```
-Use another shell to clone degit.git and push it to IPFS; 
+Clone degit.git and push it to IPFS; 
 ```bash
 $ git clone https://github.com/Persper/degit.git
 $ cd degit
